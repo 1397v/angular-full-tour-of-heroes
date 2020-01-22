@@ -1,0 +1,21 @@
+<h2>My Heroes <i class="fa fa-plus-circle interactive" style="color: darkgreen;" (click)="onClickAdd()"></i></h2>
+
+<div *ngIf="addNewHero">
+    <h4>Add new hero:</h4>
+    <div>
+        <label>name:
+            <input [(ngModel)]="newHeroName" placeholder="name" required/>
+        </label>
+        <button (click)="onAddHero(newHeroName)">Add hero</button>
+    </div>
+</div>
+
+<ul class="heroes">
+    <li *ngFor="let hero of heroes">
+        <a routerLink="/detail/{{hero.id}}">
+            <span class="badge">{{hero.id}}</span> {{hero.name}}
+        </a>
+        <button class="delete" title="delete hero"
+            (click)="onDelete(hero)">x</button>
+    </li>
+</ul>
