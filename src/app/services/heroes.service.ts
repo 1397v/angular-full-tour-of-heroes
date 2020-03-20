@@ -41,7 +41,7 @@ export class HeroesService {
     }
 
     updateHero(hero: Hero): Observable<any> {
-        return this.http.put(this.heroesUrl, hero, this.httpOptions)
+        return this.http.put<Hero>(this.heroesUrl, hero, this.httpOptions)
             .pipe(
                 tap(_ => this.log(`updated hero ${hero.name}`)),
                 catchError(this.handleError<Hero>('updateHero'))
@@ -49,7 +49,7 @@ export class HeroesService {
     }
 
     addHero(hero: Hero): Observable<any> {
-        return this.http.post(this.heroesUrl, hero, this.httpOptions)
+        return this.http.post<Hero>(this.heroesUrl, hero, this.httpOptions)
             .pipe(
                 tap(_ => this.log(`added new hero ${hero.name}`)),
                 catchError(this.handleError<Hero>('addHero'))
@@ -63,7 +63,7 @@ export class HeroesService {
         const id = typeof hero === 'number' ? hero : hero.id;
         const url = `${this.heroesUrl}/${id}`;
 
-        return this.http.delete(url, this.httpOptions)
+        return this.http.delete<Hero>(url, this.httpOptions)
             .pipe(
                 tap(_ => this.log(`deleted hero ${typeof hero === 'number' ? "with id" + hero : hero.name}`)),
                 catchError(this.handleError<Hero>('deleteHero'))
@@ -71,6 +71,19 @@ export class HeroesService {
         // this.heroes.value.splice(this.heroes.value.indexOf(hero), 1);
         // this.log(`HeroesService: removed ${hero.toString()}`);
         //this.heroes.next(this.heroes.value);
+    }
+
+    /* GET heroes whose name contains search term */
+    searchHeroes(term: string): Observable<Hero[]> {
+        if (!term.trim()) {
+            return of([]); // if not search term, return empty hero array.
+        }
+        return this.http.get<Hero[]>(`${this.heroesUrl}/?name=${term}`).pipe(
+            tap(x => x.length ?
+                this.log(`found heroes matching "${term}"`) :
+                this.log(`no heroes matching "${term}"`)),
+            catchError(this.handleError<Hero[]>('searchHeroes', []))
+        );
     }
 
     /** Log a HeroService message with the MessageService */
